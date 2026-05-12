@@ -1,1 +1,6 @@
-# Scripts Auxiliares\n\nScripts de deploy, migração e automação do projeto CardioIA.
+# Scripts Auxiliares
+
+Scripts de deploy, automação e manutenção do projeto CardioIA.
+
+- `deploy.sh` — deploy do dashboard Node-RED
+- `backup_db.sh` — backup do banco SQLite

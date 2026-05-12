@@ -1,26 +1,28 @@
-# CardioIA Conectada — Relatórios IR ALÉM 1 e 2
+# CardioIA Conectada — Relatórios Ir Além
 
-## Relatório Ir Além 1 — REST API e Email Automático
+**FIAP — 2TIAO — Grupo 15 — Bruno Gambarini (RM561517)**  
+**Data: 12/05/2026**
 
-**FIAP — 2TIAO — Grupo 15 — Bruno Gambarini (RM561517)**
+---
+
+## Ir Além 1 — REST API e Alerta por E-mail
 
 ### Objetivo
-Implementar uma REST API em Python Flask para comunicação automatizada com o sistema CardioIA, permitindo o recebimento, consulta e análise dos dados de monitoramento, além de um sistema de alertas por e-mail para notificação automática de eventos cardíacos críticos.
+
+Implementar uma REST API em Python Flask para comunicação automatizada com o sistema CardioIA, permitindo recebimento, consulta e análise dos dados de monitoramento, com notificação automática por e-mail para eventos críticos.
 
 ### Arquitetura REST
 
-A API expõe os seguintes endpoints:
-
 | Método | Endpoint | Função |
 |--------|----------|--------|
-| POST | /api/dados | Receber leitura JSON do ESP32 |
-| GET | /api/dados | Listar últimos 100 registros |
-| GET | /api/dados/stats | Estatísticas (média, max, min) |
-| GET | /api/alertas | Últimos alertas gerados |
+| POST | `/api/dados` | Receber leitura JSON do ESP32 |
+| GET | `/api/dados` | Listar últimos 100 registros |
+| GET | `/api/dados/stats` | Estatísticas (média, max, min) |
+| GET | `/api/alertas` | Últimos alertas gerados |
 
 ### Fluxo de Alerta
 
-Quando a API recebe um valor de BPM > 120 ou temperatura > 38°C, um alerta é gerado automaticamente e armazenado na tabela de alertas do SQLite. O módulo `email_alerts.py` pode ser acionado para enviar um e-mail formatado (HTML + texto puro) para o médico responsável.
+Quando a API recebe BPM > 120 ou temperatura > 38°C, um alerta é gerado e armazenado na tabela de alertas do SQLite. O módulo `email_alerts.py` envia e-mail formatado (HTML + texto puro) para o médico responsável via SMTP.
 
 ### Integração com o ESP32
 
@@ -31,57 +33,74 @@ Quando a API recebe um valor de BPM > 120 ou temperatura > 38°C, um alerta é g
 ```
 
 ### Tecnologias
-- Flask 3.0 (microframework web)
-- SQLite (banco embedded, zero config)
-- smtplib (envio de e-mail nativo Python)
-- Jinja2 (template HTML de e-mail)
+
+- Flask 3.0 — microframework web RESTful
+- SQLite — banco embedded, zero configuração
+- smtplib — envio de e-mail nativo Python
+- Jinja2 — template HTML profissional para alertas
 
 ---
 
-## Relatório Ir Além 2 — IA em Séries Temporais de Saúde
+## Ir Além 2 — IA Preditiva em Séries Temporais de Saúde
 
 ### Objetivo
-Aplicar modelos de Machine Learning para detecção de anomalias e previsão de tendências nos sinais vitais monitorados, demonstrando o potencial da IA preditiva aplicada à cardiologia.
+
+Aplicar modelos de Machine Learning e redes neuromórficas para detecção de anomalias e previsão de tendências nos sinais vitais monitorados, demonstrando o potencial da IA preditiva em cardiologia.
 
 ### Metodologia
 
-**Dataset**: 30 dias de dados sintéticos (8.640 amostras) com padrões diurnos realistas e eventos cardíacos injetados (pico de estresse, febre, taquicardia).
+**Dataset:** 30 dias de dados sintéticos (8.640 amostras) com padrões diurnos realistas e 3 eventos cardíacos injetados (pico de estresse, febre com taquicardia, pico de atividade).
 
-**Modelos Utilizados:**
+### Modelo 1 — Regressão Logística (Classificador Tradicional)
 
-1. **Isolation Forest** (Detecção de Anomalias)
-   - 100 árvores de decisão
-   - Contaminação esperada: 5%
-   - Detectou corretamente os 3 eventos cardíacos simulados
+Classificador binário que aprende pesos para cada feature (temperatura, BPM, umidade) e calcula a probabilidade de alerta cardíaco. Utiliza StandardScaler para normalização dos dados.
 
-2. **Random Forest Regressor** (Previsão de BPM)
-   - 100 árvores, max_depth=10
-   - Features: temperatura, hora, dia da semana, lags de BPM (1h, 2h, 3h), média móvel 6h
-   - MAE: ~3.5 BPM | RMSE: ~5.2 BPM
+- Split: 80% treino / 20% teste
+- Acurácia: **97.8%**
+- Feature mais importante: **BPM** (coeficiente 2.34)
+- Vantagens: rápido, interpretável, padrão da indústria
 
-### Resultados
+### Modelo 2 — Rede Neuromórfica LIF (Leaky Integrate-and-Fire)
 
-| Métrica | Detecção Anomalias | Previsão BPM |
-|---------|:-----------------:|:-----------:|
-| Precisão | 100% (eventos simulados) | — |
-| MAE | — | 3.5 BPM |
-| RMSE | — | 5.2 BPM |
-| Recall | 100% | — |
+Rede neural spiking bioinspirada com dois neurônios sensoriais:
 
-### Features Mais Importantes (Random Forest)
+- **Neurônio BPM:** sensível a taquicardia (>120 BPM)
+- **Neurônio Temperatura:** sensível a febre (>38°C)
 
-1. BPM hora anterior (lag 1): 45% de importância
-2. Média móvel 6 horas: 22%
-3. Temperatura: 15%
-4. Hora do dia: 10%
-5. BPM lag 2: 5%
+Cada neurônio acumula potencial de membrana com decaimento exponencial. Ao atingir o limiar de disparo, emite um spike — comportamento idêntico a neurônios biológicos. A decisão de alerta é baseada na taxa de disparo.
+
+- 100 passos temporais por amostra (10ms de simulação)
+- Acurácia: **95.3%**
+- Consumo estimado em chip neuromórfico: **<1 mW**
+- Inspirada em: Intel Loihi, IBM TrueNorth
+
+### Comparação
+
+| Métrica | Regressão Logística | Rede LIF |
+|---------|:------------------:|:--------:|
+| Acurácia | **97.8%** | 95.3% |
+| Treinamento | Necessário (supervisionado) | Não precisa |
+| Eficiência energética | Média (CPU/GPU) | **Alta (<1 mW)** |
+| Interpretabilidade | Alta (coeficientes) | Média (taxa de disparo) |
+| Bioplausibilidade | Nenhuma | **Alta** |
+| Ideal para | Servidores e hospitais | **Dispositivos vestíveis** |
+
+### Visualizações Geradas
+
+1. **Potencial de membrana:** comparação direta entre estado normal e de alerta, mostrando acúmulo de potencial e disparos
+2. **Espaço de características LIF:** clusters bem definidos entre estados normal e alerta
+3. **Matriz de confusão:** desempenho do classificador tradicional
+4. **Comparação de acurácia:** gráfico de barras Regressão Logística vs Rede LIF
 
 ### Conclusão
 
-O Isolation Forest provou ser eficaz na detecção automática de eventos cardíacos sem necessidade de thresholds manuais — o modelo identifica anomalias estatísticas, não apenas valores absolutos. O Random Forest alcançou erro aceitável para previsão de tendências de curto prazo. A combinação dos dois modelos oferece um sistema dual: detecção (anomalias) + previsão (tendências), formando a base para um sistema de alerta precoce em monitoramento cardíaco contínuo.
+A Regressão Logística oferece maior acurácia (97.8%), sendo ideal para servidores com infraestrutura de processamento. A Rede LIF, com 95.3% de acurácia e consumo inferior a 1 mW, representa o futuro dos dispositivos vestíveis de monitoramento contínuo — permitindo operação por dias com bateria limitada.
+
+Ambos os modelos detectam com sucesso os eventos cardíacos simulados, demonstrando a viabilidade da IA preditiva aplicada à cardiologia.
 
 ### Trabalhos Futuros
-- Substituir Random Forest por LSTM para capturar dependências temporais longas
-- Treinar com dados reais de pacientes (anonimizados e com consentimento)
-- Implementar pipeline de retreinamento automático (MLOps)
-- Integrar previsões ao dashboard Node-RED em tempo real
+
+- Substituir Random Forest por LSTM para dependências temporais longas
+- Treinar com dados reais de pacientes (anonimizados)
+- Implementar pipeline de retreinamento automático
+- Evoluir a rede LIF para arquitetura multi-camada (Deep Spiking Networks)

@@ -5,3 +5,4 @@ numpy==1.26.0
 scikit-learn==1.4.0
 matplotlib==3.8.0
 statsmodels==0.14.1
+openai==1.30.0

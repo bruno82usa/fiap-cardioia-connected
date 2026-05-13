@@ -1,36 +1,52 @@
-# Projeto Wokwi — CardioIA Conectada (ESP32)
+# Projeto Wokwi — CardioIA Conectada
 
-## Link do Projeto Wokwi
+> Montagem passo-a-passo para o simulador Wokwi
 
-https://wokwi.com/projects/new/esp32
+## 🚀 Passo a Passo (2 minutos)
 
-> Carregue o arquivo `../esp32/parte1_wokwi.ino` no Wokwi para simular.
+### 1. Criar projeto
+Acesse https://wokwi.com/projects/new/esp32
 
-## Componentes
+### 2. Substituir diagram.json
+- Clique na aba `diagram.json`
+- Apague todo o conteúdo (Ctrl+A → Delete)
+- Cole o conteúdo de [`src/esp32/diagram.json`](src/esp32/diagram.json)
 
-| Componente | Pino ESP32 | Função |
-|-----------|:----------:|--------|
-| DHT22 | GPIO 15 | Temperatura + Umidade |
-| Botão Pulsador | GPIO 4 (GND) | Simular BPM |
-| LED Verde | GPIO 2 | Conectado (WiFi) |
-| LED Vermelho | GPIO 0 | Desconectado |
-| LED Amarelo | GPIO 5 | Alerta (>38°C ou >120 BPM) |
+### 3. Substituir sketch.ino
+- Clique na aba `sketch.ino`
+- Apague todo o conteúdo
+- Cole o conteúdo de [`src/esp32/parte1_wokwi.ino`](src/esp32/parte1_wokwi.ino)
 
-## Como testar
+### 4. Executar
+- Clique no ▶ **Play** (botão verde no canto inferior esquerdo)
+- O Monitor Serial mostrará as leituras
+- Pressione o botão do circuito para simular batimentos
 
-1. Acesse https://wokwi.com/projects/new/esp32
-2. Copie o código de `esp32/parte1_wokwi.ino` 
-3. Adicione os componentes conforme tabela acima
-4. Execute a simulação
-5. Observe o Monitor Serial para ver as leituras
+## 📋 Componentes
 
-## Diagrama de Conexões (Wokwi)
+| Quantidade | Componente | Localização no diagrama |
+|:----------:|-----------|------------------------|
+| 1 | ESP32 DevKit V4 | Centro |
+| 1 | DHT22 | Acima do ESP32 |
+| 1 | Botão Pulsador (vermelho) | Abaixo do ESP32 |
+| 1 | LED Verde | À esquerda, superior |
+| 1 | LED Vermelho | À esquerda, meio |
+| 1 | LED Amarelo | À esquerda, inferior |
+| 3 | Resistor 220Ω | Entre LEDs e ESP32 |
 
-```
-ESP32
-├── GPIO 15 → DHT22 (Data)
-├── GPIO 4  → Botão → GND
-├── GPIO 2  → LED Verde (220Ω) → GND
-├── GPIO 0  → LED Vermelho (220Ω) → GND
-└── GPIO 5  → LED Amarelo (220Ω) → GND
-```
+## 🔌 Conexões
+
+| GPIO | Componente | Cor do fio |
+|:----:|------------|:----------:|
+| 3.3V | DHT22 VCC | 🔴 Vermelho |
+| GND | DHT22 GND | ⚫ Preto |
+| 15 | DHT22 Data | 🟢 Verde |
+| 4 | Botão (pino 2) | 🔵 Azul |
+| GND | Botão (pino 1) | ⚫ Preto |
+| 2 | LED Verde (via 220Ω) | 🟢 Verde |
+| 0 | LED Vermelho (via 220Ω) | 🔴 Vermelho |
+| 5 | LED Amarelo (via 220Ω) | 🟡 Amarelo |
+
+## 🔗 Link direto
+
+**https://wokwi.com/projects/463861297023651841**
